@@ -1,0 +1,250 @@
+documentclass{article}
+usepackage{latexsym,amssymb,enumerate,amsmath,epsfig,amsthm}
+usepackage[margin=1in]{geometry}
+usepackage{setspace,color}
+usepackage{graphicx}
+usepackage{subfigure}
+usepackage[english]{babel}
+usepackage[table,xcdraw]{xcolor}
+usepackage[utf8]{inputenc}
+usepackage{amsmath}
+usepackage{graphicx}
+usepackage[colorinlistoftodos]{todonotes}
+usepackage{geometry}
+usepackage{caption}
+usepackage{url}
+usepackage{array}
+usepackage[toc,page]{appendix}
+
+usepackage{xcolor}
+usepackage{listings}
+
+usepackage{tikz}
+usetikzlibrary{shapes,arrows}
+tikzstyle{block} = [rectangle, draw, text width=7.5em, text centered, rounded corners,node distance=4cm, minimum height=4em]
+tikzstyle{line} = [draw, -latex']
+
+newtheorem{eg}{Example}[section]
+newcommand{ds}{displaystyle}
+usepackage{hyperref}
+usepackage{xcolor}
+hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+
+definecolor{mGreen}{rgb}{0,0.6,0}
+definecolor{mGray}{rgb}{0.5,0.5,0.5}
+definecolor{mPurple}{rgb}{0.58,0,0.82}
+definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+lstdefinestyle{CStyle}{
+    backgroundcolor=color{backgroundColour},   
+    commentstyle=color{mGreen},
+    keywordstyle=color{magenta},
+    numberstyle=tinycolor{mGray},
+    stringstyle=color{mPurple},
+    basicstyle=footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+begin{document}
+title{Complexité et Calculabilité}
+author{
+Groupe D , L3-Informatique }
+
+maketitle
+
+
+
+section{Partition en Triangles }
+subsection{Introduction }
+subsubsection{Langage }
+Toute traduction elle s'opère entre un langage formel $sigma $ et un langage $theta$ .
+Un langage est un ensemble de mot bien formé , pour savoir si un mot est bien formé nous devons doté notre langage de règle de grammaire .
+
+Un mot est un ensemble de symbole , les symboles sont définit sur un alphabet .
+
+subsubsection{Problème de décision}
+
+Un type de problème est un ensemble de phrase obéissant à une certaine construction , par exemple  toute les phrases qui obéissent à la forme Fait il beau dans le pays x  , avec x $in$ Pays  
+
+Un problème de décision est un problème qui demande de répondre à la phrase par oui ou non .
+
+Ainsi un problème de décision peut être vue comme un langage L tel que l'ensemble des phrases appartenant au langage L est associé à une réponse positive . 
+
+
+subsubsection{Traduction }
+
+
+Une réduction est appelé communément appelé une traduction .   
+
+Ainsi l'on  dit qu'on a réduit un problème A à un problème B si l'on arrive à trouver une fonction qui traduit tout instance d'un problème A en une instance du problème B . La réduction se note  $A leq B$ .
+
+Comme dit précédemment un problème est un langage d'où le mot traduction, ainsi f se définit par 
+
+Soit A un problème  définit sur un langage $sigma$ et B un problème NP-complet  définit sur un langage $theta$ .
+
+Si f est une fonction de traduction de A vers B alors on a 
+
+$f  sigma^ rightarrow theta^$ tel que 
+$A leq B$ $leftrightarrow$ 
+$w in A leftrightarrow f(w) in B  $
+
+En francais ça donne 
+
+Soit f tel que  w décrit une instance du problème A  $leftrightarrow$  on peut traduire w en une instance du problème B par f  .
+
+
+Une autre façon de voir les choses est de dire que underline{tout problème de type A} est mis en correspondance par f avec une partie des problèmes de type B .
+
+subsubsection{Réduction }
+
+Remarque  f est supposé est calculable en temps polynomial . 
+
+Si nous avons un algorithme  Solvetextunderscore B nous répondant oui ou non pour chaque instance d'un problème de type B et que nous avons f underline{une fonction totale},  traduisant un problème de A vers un problème de type B .
+Alors comme f est totale , $forall a in L(A)$ Solvetextunderscore B ( $f(I_a)$ ) résout tous les problème de A . 
+
+
+Ainsi on pourrait dire que f(A) est inclu dans L(B) et comme f est totale L(A) est inclu dans L(B) à une traduction près . Il serait ainsi naturel de dire que B est au moins aussi dur que A car B contient la complexité de A (à un temps polynomial près ) .
+
+
+section{Exerice}
+
+
+Notre objéctif va être de prouver que le problème de la partition en Triangles est NP-complet .
+
+
+subsection{Probleme Enonce}
+ title{Partition en Triangles}
+
+textbf{Entrée}  Un graphe G = (V,E) avec $V = 3q, q in  mathbb{N}$.
+
+medskip
+
+underline{Question}  Est-ce qu’il existe une partition de V en q ensembles disjoints V1, V2,..., Vq de trois sommets chacun tel que pour chaque $Vi = {v_{i1}, v_{i2} , v_{i3}}$ les trois arêtes appartiennent à E 
+medskip
+
+Autrement dit peut-on couvrir le graphe par des triangles de taille trois 
+
+
+subsection{Préliminaire}
+Pour prouver que le problème P1 est NP-complet on doit réduire  un problème connu comme étant NP-Complet à P1 , ainsi on prouvera que P1 est au moins aussi dur qu'un problème NP et par transitivité qu'il est NP-complet
+
+ En effet , tout problème de NP est réductible à un problème NP-complet grâce à une certaine fonction de traduction $f_i$ 
+
+Soit PC1 un problème NP-Complet et $L(PC1)$ son langage , alors nous avons 
+$forall P_i in NP exists f_i in poly_function forall I_i in L(P_i)$ tq $f_i(I_i) in L(PC1)$ 
+
+Si un problème NP-complet PC1 se réduit à un problème NP1 par une fonction de traduction g1 
+
+$exists g1 in poly_function forall IC_i in L(PC1)$ tq $g1(IC_i) in L(NP1)$ 
+
+Alors on a 
+
+$forall I_i in L(P_i)$ $g1(f_i(I_i)) in L(NP1)$ 
+
+Donc NP1 est aussi NP-complet .
+
+section{Résolution}
+Nous allons utilisé le problème 3-SAT pour la réduction.Ainsi nous devons traduire une instance de 3-SAT en une instance de la partition Triangle.
+
+subsection{Traduction }
+
+subsubsection{Vocabulaire}
+
+Soit $mathbb{P}$ un ensemble de  variables porpositionnelle .
+
+Un littéral est de la forme  $forall l_i, exists pv_i in mathbb{V} $ where $l_i in {lnot pv_i ,pv_i}$ 
+
+
+Une clause est de la forme  $forall C_i , C_i= bigvee_{i in [r]}l_i $ où  $l_i in mathbb{L} $ et $r in mathbb{N}$
+
+Et soit $taille  mathbb{C} rightarrow mathbb{N}$ qui associe à chaque clause le nombre de littéraux dans celle ci . 
+
+Notation  Soit $C_i$ une clause quelconque $taille(C_i)=C_i$
+
+medskip
+
+Une CNF est une conjonction de clause 
+
+$bigwedge_{i in [r]}C_i$ avec $C_i in mathbb{C}$ et $C_i = r$
+
+Une 3-CNF est définit comme suit
+$bigwedge_{i in [3] }C_i$ avec $C_i in mathbb{C}$ et $C_i=3$
+
+subsection{3-SAT}
+
+
+Soit $phi$ une 3-CNF définit sur $mathbb{V}$  ( on suppose que l'inteprétation des symboles de $phi$ est hérité de la logique classique , on notera J cette structure ).
+
+
+Une instance du problème 3-SAT est définit comme suit 
+
+Existe-t-il une assignation qui satisfasse $phi$ 
+
+$phi^{mathbb{J}}[l_0rightarrow b_0,l_1rightarrow b_1,...,l_nrightarrow b_n] = 1$ avec $l_i in mathbb{L} $ et $b_i in {0,1} $
+
+Ou de manière fonctionnelle avec $theta  mathbb{P}^n rightarrow {{0,1}}^n$
+tel que $forall l_i in {l_0,l_1,...,l_p} ,theta_{b_0,b_1,...,b_p}(l_i)=b_i$ et $theta_{b_0,b_1,...,b_p}^{phi}(phi) = 1 $
+
+(Cette fonction pourrait nous être utile pour résoudre FSAT ).
+
+subsection{Traduction  }
+Soit l'instance d'un prolbème 3-SAT avec n clauses et k variables .
+On note $phi$ l'expression à satisfaire , $mathbb{V}^{phi}$ l'ensemble des symboles de variables de $phi$, $mathbb{L}^{phi}$ l'ensemble des littéraux associer à $mathbb{V}^{phi}$ ,$mathbb{C}^{phi}$ l'ensemble des clauses appareceant dans $phi$ .
+
+
+(On utilisera 
+$lp_i et ln_i in mathbb{L}^{phi}$ , $v_i in mathbb{V}^{phi}$  et $C_i in mathbb{C}^{phi}$  ) 
+
+
+Les littéraux de $mathbb{L}^{phi}$  seront traduits par les sommets ${s_1,...,s_2kn}$ . 
+En sommes on crée pour chaque variable de $mathbb{V}^{phi}$ (k) 2 sommets (2) pour chacune des n clauses de $phi$(n) (=2kn).
+
+Le premier sommet $s_{2i}$ représente la pontentielle occurence du littéral positif $lp_i=v_i$ dans la clause $C_i$ et l'autre  $s_{2i+1}$ la pontentielle occurence du littéral négatif  $ln_i=lnot v_i$ dans la clause $C_i$ .
+
+
+Soit un ensemble de sommets  ${a_1,...,a_{kn}}$ , taille = kn car il y a kn sommets invalidé par l'assignation parmis les 2kn . 
+
+La distribution de valeurs de vérité $theta$ sera traduite par 
+si $thetal^{phi}(lp_i) =1$ avec $lp_i in mathbb{L} $ un littéral positif  alors on ajoutera le triplet $(s_{2i+1},a_{2i},a_{2i+1})$ à la couverture $Theta$ .
+sinon on ajoutera le triplet $(s_{2i},a_{2i},a_{2i+1})$ à la couverture $Theta$ .
+Ces triplets représente  les littérauxclauses qui ont été exclu par la nature de l'assignation .
+
+Soit un ensemble de variable  ${a_0,a_1,...,a_{2n}}$ 
+
+Soit un ensemble de variable  ${c_1,...,c_{3n}} in {0,1}^{3n}$ , $c_{3i}=1$ si la première variable de la clause $C_i$  est un littéral positif sinon $c_{3i}=0$.
+
+
+La clause $C_i$ sera traduite par 3 triplets , dont chacun possède 2 sommets dans $ {a_1,...,a_{2n}} $ et un sommet dans ${s_1,...,s_{2kn}} $ .
+Ainsi $C_i$ se transforme en 
+
+$CT_i={(s_{2ntimes n_1+i+c_{3i}},a_{2i},a_{2i+1}),(s_{2ntimes n_2+i+c_{1+3i}},a_{2i},a_{2i+1}),(s_{2ntimes n_3+i+c_{2+3i}},a_{2i},a_{2i+1})}$
+
+avec $n_1$ ,$n_2$ et $n_3$ les indexes des variables apparaissant dans la clause$ C_i$ . ( voir exemple).
+
+Si $exists e in [2kn] $ tel que $s_{e}$ n'est pas encore couvert alors $forall CT_i $ tel que $s_{e} in CT_i $  on ajoute les triplets de $ CT_i$ à $Theta$ .
+
+
+Soit $C_i=(l_1^i ,l_2^i,l_3^i),theta^{C_i}(C_i)=1 $  sera traduit par $exists e in [2kn] $ tel que  $(s_{e},a_{2i},a_{2i+1}) in Theta $
+
+Soit $theta^{phi}(phi)=1 $  sera traduit par $forall C_i in mathbb{C} , exists e in [2kn] $ tel que  $(s_{e},a_{2i},a_{2i+1}) in Theta $ ou plus simplement $Theta$ couvre tous les points du graphe . 
+
+
+Ainsi par exemple $2ntimes n_1$ nous place sur le premier sommet de la variable numéro $n_1$ puis $+i$ sur l'instance positive destiné à la clause $C_i$ et $+c_{3i}$ sur l'instance appareceant dans $C_i$ ( +0 si positif +1 si négatif).
+
+
+end{document}
