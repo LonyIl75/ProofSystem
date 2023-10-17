@@ -1,0 +1,1082 @@
+\documentclass{article}
+\usepackage{latexsym,amssymb,enumerate,amsmath,epsfig,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace,color}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage[english]{babel}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{url}
+\usepackage{array}
+\usepackage[toc,page]{appendix}
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+\makeatletter
+\newcommand{\xRightarrow}[2][]{\ext@arrow 0359\Rightarrowfill@{#1}{#2}}
+\makeatother
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\tikzstyle{block} = [rectangle, draw, text width=7.5em, text centered, rounded corners,node distance=4cm, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+
+\newtheorem{eg}{Example}[section]
+\newcommand{\ds}{\displaystyle}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+
+\begin{document}
+\title{Vérification}
+\author{Groupe D}
+
+\maketitle
+
+
+
+\section{Introduction}
+Il nous a été rappelé qu'une introduction au lambda calcul pourrait nous être nécessaire pour mieux appréhender les concepts relatif à coq , j'aime bien  partir de la page wikipédia sur le lambda calculus \cite{FT21} pour délimiter les thèmes , puis lire attentitvement les 50 premières pages de l'introduction au lambda calculus présenté par Boro Sitnikovski \cite{A4-book} et finalement le  chapitre 3 et plus particulièrement 5 du  Coq Art \ref{S1-livre}. 
+Pour avoir une ressource "plus académique" sur le calcul des constructions se référer au cours de Mme.Paulin \ref{A5-notes} . 
+
+\pagebreak
+\section{ Le langage :}
+Tout d'abord nous allons définir un langage sur lequel nous allons travailler (l'écrire "formellement" nous sera très utile pour la suite de ce TP ) .
+\subsection{Qu'est ce qu'un langage ?}
+
+Syntaxe :
+
+Un langage est la réunion d' ensemble de symboles chacun exprimant : 
+les variables , les constantes , les fonctions et les relations  
+
+\medskip 
+
+\noindent Sémantique :
+
+Un langage L (une signature ) est interprété par une L-structure (une interprétation)  qui  associe une valeur sémantique à chaque symbole de L . Cette structure est définit sur B (le domaine/la base  d'interprétation) .
+
+\subsection{De quoi avons nous besoin ?}
+
+\{while ,assignation , ... \}  $\xRightarrow{Stm}$ les instructions
+
+\medskip
+
+Une instruction while est de la forme:
+\begin{lstlisting}[style=CStyle]
+while ( Bexp:cond ) { Stm:programme }
+\end{lstlisting}
+Donc nous avons besoin d'une meta variable pour exprimer la condition  ainsi que d'une sémantique pour pouvoir l'évaluer . 
+
+\medskip
+
+Une assignation est de la forme :
+\begin{lstlisting}[style=CStyle]
+Ass(A:Type  , lhs:Var_A , rhs:Expression_A) 
+// A est le type de la variable lhs et rhs est une expression convertible en ce type 
+\end{lstlisting}
+Donc nous avons besoin de meta variables pour exprimer les variables et les expressions de type A .
+
+\medskip
+
+\noindent  Dans le cadre de ce TP nous nous restreindrons aux expressions arithémtiques définit sur $\mathbb{Z}$ donc A sera toujours égal Z .
+
+\subsection{Traduction formelle :}
+
+Nous présupposons que la structure associé aux entiers relatifs est déjà définit donc nous pouvons l'utilisé dans nos constructions futures .
+
+
+\subsubsection{Expression Arithmétique :}
+\,
+
+\underline{Syntaxe}:
+
+Soit a le symbole de variables .
+
+
+Soit $\{:=,-,+,\div,\times\}$ les symboles de relations.
+
+\medskip
+
+\underline{Sémantique}:
+
+Soit $\mathbb{Z}$ la base de la L-structure 
+
+Soit $\{Ass,Minus,Plus,Div,Mult\}$  les interprétation des relations dans $\mathbb{Z}$.
+
+
+
+\subsubsection{Expression Booléenne :}
+\,
+
+\underline{Syntaxe}:
+
+Soit b le symbole de variables  .
+
+Soit $\{\lnot,\land,\implies,=,<=\}$ les symboles de relations
+
+Soit $\{BTrue ,BFalse\}$ les "symboles" de constantes .
+
+\medskip
+
+\underline{Sémantique}:
+
+Soit $\mathbb{B}$ la base de la L-structure 
+
+Soit $\{Not,And,Eq,Le\}$  les interprétation des relations dans  $\mathbb{B}$.
+
+Soit $\{true,false\}$ l'interprétations des constantes dans $\mathbb{B}$ .
+
+
+\subsection{Implémentation Coq :}
+
+\subsubsection{Rappel Type inductif :}
+Un type inductif est construit par un ensemble de constructeurs 
+
+\medskip 
+
+Inductive nom $( p^1:P1)...(p^{np}:P^{np})$:$\forall (a^1:A^1)... (a^{na}:A^{na})$, s :=
+
+$co^1$ :$\forall (x_1^1:A_1^1)...(x_1^{a1}:A_1^{a1}),nom(p^1,...,p^{np},t^1,...,t^{na}) $
+
+...
+
+$co^{n}$ :$\forall (x_{n}^1:A_{n}^{1})...(x_{n}^{an}:A_{n}^{an}),nom(p^1,...,p^{np},t^1,...,t^{na}) $
+
+\bigskip
+
+\underline{Vocabulaire} :
+\begin{itemize}
+ \item $\{ p^1,...,p^n\}$  sont appelés les paramètres de la famille car l'ensemble des constructeurs est une famille qui nécessite ces paramètres .
+
+
+
+ \item s est la sorte de nom , la sorte s peut avoir besoin de paramètre pour se définir d'où la présence des  $\{ a^1,...,a^n\}$ (cf. type dependent ) .
+
+
+ \item $\{ a^1,...,a^n\}$ sont appelé les paramètres de prédicat , l'explication est qu'un type dependent peut s'écrire sous la forme d'un prédicat , un prédicat s'écrit :
+
+$A^1 \rightarrow ... \rightarrow  A^n \rightarrow  Prop $ .
+\end{itemize}
+
+
+\noindent Nous remarquons que chaque constructeur prend un certain nombre d'arguments de type divers et renvoie une expression de la forme :
+\begin{center}
+\boldsymbol{nom(p^1,...,p^{np},t^1,...,t^{na}) }.
+\end{center}
+\noindent Cela veut dire que chacun des n constructeurs de nom peut  construire une expression de type  :$nom(p^1,...,p^{np},t^1,...,t^{na})$ à partir d'une autre expression définit avec $ai$ arguments ($i \in [n]$ ) .
+
+Pour l'instant l'on ne s'interesse qu'à l'interprétation/évaluation des symbole de relation et de fonction . Nous verrons plus en détail l'interprétations des symboles de variables et constante dans une autre partie .
+
+\subsubsection{Expression Arithmétique  :}
+\,
+
+\noindent \underline{Syntaxe}:
+La syntaxe est donnée par le type inductif suivante :
+\begin{lstlisting}[style=CStyle]
+  Inductive aexp : Type :=
+  | ANum : Z -> aexp
+  | AVar : ... -> aexp //(* on le completera plus tard *)
+  | APlus : aexp -> aexp -> aexp
+  | AMinus : aexp -> aexp -> aexp
+  | AMult : aexp -> aexp -> aexp.
+\end{lstlisting}
+
+
+\noindent \underline{Sémantique}:
+La sémantique est donnée par la fonction d'évaluation suivante :
+\begin{lstlisting}[style=CStyle]
+Fixpoint aeval (a : aexp) : Z :=
+  match a with
+    | ANum n => n //(* on le verra plus tard *) 
+    | AVar v => ... //(* on le completera plus tard *)
+    | APlus a1 a2 => (aeval a1) + (aeval a2)
+    | AMinus a1 a2 => (aeval a1 ) - (aeval a2)
+    | AMult a1 a2 => (aeval a1) * (aeval a2)
+  end.
+  \end{lstlisting}
+\,
+
+\subsubsection{Expression Booléenne :}
+\,
+
+\noindent \underline{Syntaxe}:
+\begin{lstlisting}[style=CStyle]
+Inductive bexp : Type :=
+  | BTrue : bexp
+  | BFalse : bexp
+  | BEq : aexp -> aexp -> bexp
+  | BLe : aexp -> aexp -> bexp
+  | BNot : bexp -> bexp
+  | BAnd : bexp -> bexp -> bexp.
+\end{lstlisting}
+
+
+
+\noindent \underline{Sémantique}:
+
+\begin{lstlisting}[style=CStyle]
+Fixpoint beval (e : bexp) : bool :=
+  match e with
+    | BTrue => true
+    | BFalse => false
+    | BEq a1 a2 => Zeq_bool (aeval a1) (aeval a2)
+    | BLe a1 a2 => Zle_bool (aeval a1) (aeval a2)
+    | BNot b1 => negb (beval b1)
+    | BAnd b1 b2 => andb (beval b1) (beval b2)
+  end.
+ \end{lstlisting}
+
+
+\noindent et BFalse sont de type bool , ils correspondent à True et False qui quant à eux sont définit dans la sorte Prop .
+
+
+\noindent Zeq\textunderscore bool et Zle\textunderscore bool correspondent à l'égalité \it{eq\%Z} et à l'infériorité \it{Le\%Z} à ceci près qu'ils ont pour domaine $\mathbb{B}$ et non Prop . Le co-domaine reste inchangé : $\mathbb{Z}^2$ .  
+
+\begin{lstlisting}[style=CStyle]
+Check(Zeq_bool).
+// (* Zeq_bool: Z -> Z -> bool *)
+\end{lstlisting} 
+
+\noindent Il en va de même pour negb et andb qui sont équivalent à \it{neg}  et \it{and} excepté qu'ils ont pour co-domaine $\mathbb{B}^2$ et pour domaine  $\mathbb{B}$.  
+
+
+\subsection{ Variable :}
+
+
+
+\subsubsection{Système Déductif :}
+
+
+
+Un Système Déductif est constitué de :
+\begin{itemize}
+\item Un alphabet
+\item Une grammaire 
+\item Un schéma d'axiome (Ax)
+\item Un ensemble de règle d'inférence (Ri) 
+\end{itemize}
+
+\noindent Dans la suite de ce TP "les règles" d'un système  désignera l'ensemble : $Ax \cup Ri $ .
+
+\medskip
+
+\noindent \underline{Remarque }:
+
+\medskip
+
+
+\noindent Un système déductif est la forme "factorisé" d'une théorie T , pour rappel une théorie est un ensemble de formule supposé close définit sur un langage L. 
+
+\noindent Par factorisé j'entends , tout expression qui est dérivable par une suite de règle d'inférence à partir d'un axiome  du système appartient à la théorie T . 
+
+
+
+\subsubsection{ Introduction :}
+
+Donner une certification de type se résume : 
+\begin{center}
+\textit{" Si je veux prouver que l'expression est de type Sequoia alors je dois construire un arbre Sequoia qui à pour racine mon expression ." }
+\end{center}
+
+\noindent La croissance de l'arbre se fait de bas en haut en utilisant les règles du système déductif .
+
+\medskip
+
+\noindent On appelera feuille  l'ensemble des règles appartenant au schéma d'axiomes du système .Et on dira que ces feuilles cloturerent la croissance d'une branche , en ce sens que l'espace d'hypothèse étant vide il ne reste plus rien à prouver ce qui achève la "croissance" .
+
+\subsubsection{ Le Système Séquoia :}
+
+Soit une règle  Aurore appartenant aux règles d'inférences du système Séquoia définit comme suit  :
+\begin{lstlisting}[style=CStyle]
+Aurore:Sexp->Sexp 
+// (* avec Sexp l'abreviation de Sequoia expression *)
+\end{lstlisting}
+Sens de la règle  :  "Aurore s1" est une expression de type Sequoia ssi s1 est une expression de type Sequoia .
+
+\medskip
+
+\noindent Admettons que le schéma d'axiome du système Sequoia n'est constituer que de l'axiome Pomme alors je dois courronnés chacune des branches de mon arbres de preuve avec des Pommes .
+
+
+\medskip
+
+\noindent Soit l'axiome Pomme  définit comme suit :
+\begin{lstlisting}[style=CStyle]
+Pomme:Eexp->Sexp
+//(* avec Eexp l'abreviation de Epicea expression *)
+\end{lstlisting}
+Sens de l'axiome :  "Pomme c" est une expression de type Sequoia ssi c est une expression de type Epicéa.
+
+\medskip
+
+\noindent D'après \textit{"Sens de l'axiome"} , il faut égalemment que je prouve que l'expression que j'ai déclaré comme étant une Pomme est constitué par une unique expression de type Epicéa . Donc pour chaque feuille de mon Sequoia il faut que je construise un arbre/une preuve du type Epicéa ...
+
+
+\subsubsection{Exemple des expressions arithmétiques  :}
+
+Les expressions arithmétiques sont similaire au système Séquoia , en ce sens qu'il faudrait théoriquement apporter une justification que $n \in \mathbb{Z}$ ou que $v \in \mathbb{V}$ lorsque l'on cloturera ses feuilles avec ANum et AVar resp :
+
+\begin{figure}[h]
+\centering
+  \label{CIMresult2}
+  \includegraphics[width=0.45\textwidth]%
+    {image/-cas.png}
+\end{figure}
+
+Grâce au type Coq s'en chargera pour nous  ( ? cf.inférence type/analyse statique ). 
+
+
+
+
+\subsubsection{Interprétation des variables et constantes}
+
+
+\noindent Quand nous écrivons des nombres ou des variables nous supposons qu'il y a une correspondance implicite entre nos symboles ,par exemple : $\{1,x\}$ et leur interprétation définit sur $\mathbb{Z}$  :
+On peut exprimer cette correspondance avec les fonctions suivantes :
+
+
+\begin{itemize}
+\item $fi_{num} : Num \rightarrow \mathbb{Z} $
+
+\item $fi_{var} : Var \rightarrow \mathbb{Z} $
+
+\end{itemize}
+
+\underline{Remarque} :
+
+\medskip
+
+\noindent $fi_{var}$ est communément appelé un état : il associe à chaque variable une valeur dans $\mathbb{Z}$.
+
+\noindent $fi_{num}$ est supposé déjà définit par coq, il interpréte le symbole/chaine de caractère str1 par sa valeur entière par exemple:  $fi_{num}("1") = 1$ avec $1 \in \mathbb{Z} $   . 
+
+FAUX : mais je le laisse 
+\medskip
+
+\noindent Ainsi si pour un symbole s $fi_{var}$ ou $fi_{num}$ est définit ce symbole est reconnu comme membre de   $\mathbb{V}$ resp $\mathbb{Z}$ . Nous avons donc trouvé la justification de type que l'on cherché .
+
+
+
+\subsubsection{ Allocation des variables  :}
+
+
+\it{$fi_{num}$ a été supposé avoir été crée par coq il faut maintenant implémenter $fi_{var}$ :}
+
+
+
+\noindent Pour implémenter la correspondance entre nos variables et leur valeur nous utilisons une "stack" comme en programmation , schématiquement la stack est un ensemble de case mémoire dont chacune peut être dédié à une variable x .
+
+\medskip
+
+\noindent Pour ce fait nous définissons le type inductif:
+
+\begin{lstlisting}[style=CStyle]
+//(* une variable est un identifiant et un identifiant est un nombre nat  *)
+Inductive id : Set :=
+    Id : nat -> id.
+
+\end{lstlisting}
+
+\noindent Exemple :
+
+Definition X1 := Id 7.
+Signifie que la case identifier par le numéro 7 est associé à X1 
+
+\medskip
+
+\noindent Pour récupérer la valeur associé à la case mémoire id nous définissions une fonction totale :
+
+\begin{lstlisting}[style=CStyle]
+//state <=> fi_var 
+Definition state := id ->Z. //(* nous supposons devoir stocker que des entiers *)
+\end{lstlisting}
+
+\medskip
+
+\noindent L'initialisation de la stack se fait par une fonction empty\textunderscore state qui associe la valeur 0 à toutes ses cases 
+
+
+\begin{lstlisting}[style=CStyle]
+//(* initialise la stack *)
+Definition empty_state : state := 
+  fun _ => 0.
+\end{lstlisting}
+
+
+\medskip
+
+\noindent La modification de la stack se fait par la fonction update .
+
+
+\begin{lstlisting}[style=CStyle]
+//(* update la stack *)
+Definition update (st : state) (X : id) (z : Z) : state :=
+  fun (Xa : id) => if (beq_id X Xa) then z else st Xa. 
+  
+\end{lstlisting}
+
+\noindent Update empile des modifications de la stack ainsi si X1 fait l'objet de deux update seul le plus récent sera pris en compte (comportement FIFO) :
+
+\begin{lstlisting}[style=CStyle]
+Definition X1 := Id 7.
+
+Eval compute in (empty_state X1).  //(* X1:=0 *)
+
+Eval compute in ((update empty_state X1 (-100)) X1). //(* X1:=100 *)
+
+Eval compute in ((update (update empty_state X1 (-100)) X1 (-102)) X1). //(* overwrite X1 *)
+
+Definition X2 := Id 7.
+Eval compute in ((update (update empty_state X1 100) X2 101) X1). //(* beq_id X1 X2 donc X1=X2 := 101 *)
+
+Definition X3 := Id 8.
+Eval compute in ((update (update empty_state X1 100) X3 101) X3). // (* X3:=101  *)
+
+\end{lstlisting}
+
+Prenons la ligne 5 :
+
+\medskip
+
+1) On initialise la stack à 0  // (* fun\textunderscore 0 ( Xa : id ) return 0  *)
+
+2) La case 7 est rempli avec -100 (*fun\textunderscore 1 ( Xa : id ) return ( Xa == X1 ? -100 : (fun\textunderscore 0 Xa ) )  *) 
+
+3) La case 7 est rempli avec -102 (*fun\textunderscore 2 ( Xa : id )  return ( Xa == X1 ? -102 : (fun\textunderscore 1 Xa ) ) *) 
+
+4) On demande : " qu'est ce qu'il y a dans la de X1 ?" (* ( fun\textunderscore 2 X1) *)
+
+\medskip
+
+5) Reponse : -102 . 
+
+Car  fun\textunderscore 2( Xa : id )  := return ( Xa == X1 ? -102 : ( Xa == X1 ?-100 :0 ))
+
+Et donc substituer Xa par X1 dans fun\textunderscore 2( Xa : id ) puis évaluer l'expression obtenue donne -102 . 
+
+\pagebreak
+
+\subsubsection{ Code Compléter  :}
+
+\begin{lstlisting}[style=CStyle]
+//(* Syntaxe: *)
+
+Inductive aexp : Type :=
+  | ANum : Z -> aexp
+  | AId : id -> aexp
+  | APlus : aexp -> aexp -> aexp
+  | AMinus : aexp -> aexp -> aexp
+  | AMult : aexp -> aexp -> aexp
+ 
+  
+Inductive bexp : Type :=
+  | BTrue : bexp
+  | BFalse : bexp
+  | BEq : aexp -> aexp -> bexp
+  | BLe : aexp -> aexp -> bexp
+  | BNot : bexp -> bexp
+  | BAnd : bexp -> bexp -> bexp.
+
+//(* Semantique : *)
+  
+Fixpoint aeval (st : state) (a : aexp) : Z :=
+  match a with
+    | ANum z =>  z 
+    | AId id => st id
+    | APlus a1 a2 => (aeval st a1) + (aeval st a2) 
+    | AMinus a1 a2 => (aeval st a1) - (aeval st a2)
+    | AMult a1 a2 => (aeval st a1) * (aeval st a2)
+  end.
+
+Fixpoint beval (st : state) (e : bexp) : bool :=
+  match e with
+  | BTrue => true
+  | BFalse => false
+  | BEq a1 a2 => Zeq_bool (aeval st a1) (aeval st a2)
+  | BLe a1 a2 => Zle_bool (aeval st a1) (aeval st a2)
+  | BNot b1 => negb (beval st b1)
+  | BAnd b1 b2 => andb (beval st b1) (beval st b2)
+  end.
+
+\end{lstlisting}
+
+\noindent Finalement nous n'avons pas changé grand chose : renommé une règle pour mieux exprimer "l'implémentation" et rajouter l'état st .  
+
+
+\subsection{ Instructions  :}
+
+\begin{lstlisting}[style=CStyle]
+Inductive instr_dlh : Set :=
+  | ISkip : instr_dlh
+  | IAss : id -> aexp -> instr_dlh
+  | ISeq : instr_dlh -> instr_dlh -> instr_dlh
+  | IIf : bexp -> instr_dlh -> instr_dlh -> instr_dlh
+  | IWhile : bexp -> instr_dlh -> instr_dlh.
+\end{lstlisting} 
+  
+\begin{lstlisting}[style=CStyle]  
+Inductive ceval : instr_dlh -> state -> state -> Prop :=
+  | E_Skip : forall (st : state),
+      (ceval SKIP  st  st)
+  | E_Ass : forall (st : state) (a : aexp) (z : Z) (X : id),
+       aeval st a = z ->  (ceval (X ::= a)  st  (update st X z))
+  | E_Seq : forall (i1 i2 : instr_dlh) (st st' st'' : state),
+       (ceval i1  st  st' ) -> (ceval i2  st' st'') -> (ceval (i1 ; i2)  st  st'')
+  | E_IfTrue : forall (st st': state) (i1 i2 : instr_dlh ) (b : bexp),
+       beval st b = true -> (ceval i1  st st') -> ( ceval (IFB b THEN i1 ELSE i2 FI)  st st')
+  | E_IfFalse : forall (st st': state) (i1 i2 : instr_dlh ) (b : bexp),
+       beval st b = false -> (ceval i2  st  st') -> (ceval (IFB b THEN i1 ELSE i2 FI) st st')
+  | E_WhileEnd : forall (st : state) (i1 : instr_dlh ) (b : bexp),
+       beval st b = false -> (ceval (WHILE b DO i1 END) st  st)
+  | E_WhileLoop : forall (st st' st'': state) (i1 : instr_dlh) (b : bexp),
+       beval st b = true -> 
+       (ceval i1  st st') ->
+       (ceval (WHILE b DO i1 END)  st'  st'') -> 
+       (ceval (WHILE b DO i1 END) st  st'').
+\end{lstlisting} 
+
+\noindent Voir Appendices pour la notation de M.Delahaye qui se veut plus esthétique .
+\pagebreak
+\section{Logique de Hoare : }
+
+\subsection{Triplet d'Hoare}
+La logique de Hoare s'exprime sous la forme de triplet appelé triplet de Hoare ils sont de la forme : 
+
+$\{P\}S\{Q\} $
+
+\medskip 
+
+Un triplet de Hoare est valide si et seulement si :
+
+$\forall$ st st' , $< S ,st > \rightarrow st' \implies $  P st = tt    $\implies$ Q st' = tt . 
+
+Cela se note : $|= \{P\}S\{Q\} $
+Et $< S ,st > \rightarrow st' $ veut dire : "Appliquer l'instruction S à l'état st résulte en l'état s' "
+
+
+Ainsi la Définition coq associé serait :
+
+\begin{lstlisting}[style=CStyle] 
+Definition Assertion := state -> Prop.
+
+Definition hoare_triple (P : Assertion ) (S : instr_dlh) (Q : Assertion ) : Prop :=
+  forall (st st':state),
+    (ceval S  st  st')  ->
+    P st ->
+    Q st'.
+    
+Notation "{{ P }} c {{ Q }}" := (hoare_triple P c Q) (at level 90, c at next level).
+\end{lstlisting}   
+
+Il faut comprendre le code suivant comme suit : " Si appliquer l'instruction S à l'état st résulte en l'état s' et que le prédicat P est vrai dans l'état st alors le prédicat Q est vrai dans le nouvel état st' "
+
+Il en va de même pour la lecture du triplet  $\{P\}S\{Q\} $ signifie " si P est satisfait par un état st alors Q satisfait l'état st'" ( avec st' l'état obtenue après avoir éxécuter l'instruction S dans st ) .
+
+Remarque : tt et ff sont les valeurs de true resp false pour le type Prop ,elles peuvent aussi se noter False et True  (cf. Curry Howard) 
+
+\subsection{Règles d'inférences: }
+
+\begin{figure}[h]
+\centering
+  \label{CIMresult}
+  \includegraphics[width=0.45\textwidth]%
+    {image/-log.png}
+\end{figure}
+
+Nous allons passé en revue chacune des règles ci dessus:
+
+\begin{itemize}
+    \item Axiome Skip :
+        L'instruction Skip ne fait rien \underline{elle se note skip}, ainsi le prédicat P reste valide après avoir éxécuter Skip sur l'état courant .
+    \item Axiome Ass :
+        L'instruction Ass assigne une valeur à une variable \underline{elle se note x:= a}, ainsi il est correcte de dire que soit P un prédicat avec une variable libre x alors si P est vrai dans s après avoir substituer à x la valeur e ,noté : $P[x<- e ]$*  alors P sera vrai après avoir affecté à x la valeur e dans s .
+        
+        Remarque : Une formule/un prédicat peut être généraliser ( cloture universelle) donc 
+        $P1 avec x libre \equiv \forall x P1[x]$ 
+        
+        Un quantifieur universelle peut être remplacer par une fonction  donc :
+        
+        $P1 \textit{ avec x libre } \leftrightarrow P (x:A) : Prop := (P1 x) $ (* ? Lam , pfouu oui pourquoi pas   *)
+        
+        ainsi :
+        
+        $P1[x<- e ] \leftrightarrow  (P e)  $ (* App *)
+        
+        La fonction P associe à tout x de type A (ici , Aexp) une représentation de P1 où x est substituer par la valeur passer à la fonction ,c'est  bien l'exact concept d'une quantification universelle .
+        
+      \item La règle Seq :
+      L'instruction Seq exécute i1 puis i2 dans l'état courant \underline{elle se note i1;i2} ,"si on sait que i1 appliqué à l'état de départ donne $s_i$ où Q est vrai et que i2 appliqué à $s_i$ engendre l'état s' où R est vérifier " alors on a $\{P\}i1;i2\{\R\}$  
+      
+      \item La règle If :
+      L'instruction if éxécute i1 si e sinon elle éxecute i2 \underline{elle se note if e then i1 else i2} , je pense que c'est assez explicite .
+      
+      \item La règle While :
+      L'instruction while éxecute i tant que e est évalué à vrai dans l'état courant  \underline{elle se note while e do i } , ce qui est décrit par le séquent : "si on sait que I et e sont vrai alors I reste vrai après avoir éxécuté i (quant à la valeur de e elle sera re-évaluer lors du prochain tour de boucle)" 
+      
+      I est appelé l'invariant car il est vrai après et avant l'éxécution de l'instruction , en d'autre termes il est vérifier avant et après chaque éxécution de i .
+      
+      e est la condition d'arrêt de la boucle , il est évalué à faux dans l'état final .
+      
+      \item La règle Conseq:
+      L'instruction Aff  dit une chose très simple à savoir : si nous avons $\{P'\}i\{\Q'\}$ et $P\implies P'$ et $Q' \implies Q $ alors on a $\{P\}i\{Q\}$  
+      En d'autre termes nous pouvons affaiblir (d'où le diminutif Aff ) la contrainte : $\{P'\}i\{Q'\}$ , par affaiblir une contrainte j'entends ou renforcer la pre-condition ou affaiblir la post condition *
+      \end{itemize}
+      
+      
+      *: On dit affaiblir car le pouvoir déductif deviens moins fort :
+      
+      Soit $pre-condition \implies post-condition$ la contrainte :
+      
+      Pour une pre-condition extrêmement contraignante , par exemple : pre condition = False cela n'impliquera rien sur la nature de la  post condition car $False \implies post-condition$ est toujours vrai .
+      
+      De même une post-condition trop faible : True n'imposera rien sur la pre-condition car $pre-condition \implies True$ est toujours vrai . 
+ 
+    *:, si on est tatillons on devrait écrire $P[x<- A[e] ]$ car e est une variable (lvalue) et donc elle se doit d'être intepréter pour devenir une valeur ( rvalue) cf.voir syntaxe assignation .
+
+\section{ Preuve de Complétude et de Correction :}
+
+\subsection{Introduction :  }
+
+\subsubsection{Logique premier ordre :} 
+En logique du premier ordre :
+
+- un système de règle est sémantiquement complet si  toutes les formules satisfaitent par tous modèles M  de T est prouvable/dérivable dans Sys . ( semantic => proof) :
+
+$M |= T \righarrow M |= F \implies Sys |- F   $
+
+- un système de règle est syntaxiquement complet si toutes formules dérivable  à partir de Sys est satisfaite dans tous modèles M de T ( proof => semantic ) 
+
+$Sys |- F  \implies  M|= T \righarrow M |= F   $
+
+T est une théorie définit sur un langage ( un ensemble de formule close ) .
+
+Sys est l'ensemble de règles syntaxiques associés à T .
+
+\subsubsection {Note & Rappel }
+
+Note:
+J'appèle "modèle de T" un modèle qui satisfait toutes les formules de T ($\leftrightarrow$ satisfait toutes les règles de Sys , car Sys peut produire l'ensemble des mots de T ) .
+
+
+Rappel :
+
+Un modèle est définit sur un alphabet A et permet d'évaluer la valeur sémantique d'une formule construite par une grammaire de A (=> la formule est bien formée) .Comme on l'a vue évaluer une expression se fait en interprétant l'ensemble des symboles : relation , fonction , constante , variables .
+Généralement on regroupe les intérprétation des ensembles R , F et C dans une structure et l'interprétation de l'ensemble V se fait via une "assignation". 
+Ainsi on a la notation :
+    M = < I , assignation >
+
+exemple :
+A = ${&,n,v_1,v_2,v_3}$
+Soit M et F définit sur A tel que :
+$I = < \mathbb{B}, \land, \lnot >$
+assignation = $\{v_1 \rightarrow 0 , v_2 \rightarrow  0 , v_3 \rightarrow  1\}$
+ainsi si $F = v_3 & n v_2 $ alors $<I,assignation> |= F$
+
+\subsubsection{Logique Hoare:} 
+
+Pour la logique de Hoare :
+
+
+Nous avons déjà définit notre théorie : instr\textunderscore dlh 
+
+Nous avons aussi notre structure d'inteprétation en la présence de instr\textunderscore dlh qui est un ensemble de "règles sémantiques" destinées a évaluer une formule .
+Notation:
+
+$Sys_{sem} := \{ E\_Skip ,E\_Ass ,E\_Seq ,E\_ifTrue ,E\_ifFalse ,E\_WhileEnd ,E\_WhileLoop \}$
+
+Nous avons l'abstraction de multiple assignation grâce au type state ( rappel :le state associe variable à valeur semantique ) .
+
+Nous avons égalemment un ensemble de règles syntaxique que l'on le notera $Sys_{syn}$ 
+
+$Sys_{syn} := \{ Skip,Ass,Seq,if,while,Aff\}$
+
+
+
+Donc on peut dire 
+
+- le système de règle est sémantiquement complet si pour toutes les formules satisfaitent par tous les modèles satisfaisant toutes les règles de $Sys_{sem}$  la formule est dérivable par les règles de $Sys_{syn}$ 
+
+Soit A un alphabet et Mbf(A) l'ensemble des mots de A correctement formée ,
+
+$\forall F \in Mbf(A) \forall st \in state  \forall I \in struct , <I , st > |= Sys_{sem} \rightarrow  <I,st> |= F \implies Sys_{syn} |- F $
+
+- le système de règle est syntaxiquement complet si pour toutes les formules dérivables par les règles de $Sys_{syn}$  la formule est satisfaite par tous les modèles satisfaisant les règles de $Sys_{sem}$ .
+
+
+$\forall F \in Mbf(A) \forall st \in state  \forall I \in struct , Sys_{syn} |- F \implies <I , st > |= Sys_{sem} \rightarrow  <I,st> |= F  $
+
+
+\subsection{ Notation: }
+Comme nous l'avons vue précédemment un triplet de Hoare est valide ssi :
+
+$\forall$ st st' , $< S ,st > \rightarrow st' \implies $  P st = tt    $\implies$ Q st' = tt . 
+
+Pour la suite nous noterons cette formule : 
+
+$<I,st> |= \{P\}S\{Q\}$  ou plus simplement $|= \{P\}S\{Q\}$  
+
+Dans la seconde écriture le modèle :$<I,st>$  est implicite tout comme l'état st et st' le sont pour la pre et post condition respectivement . 
+
+
+Un triplet de Hoare est dérivable par les règles de $Sys_{syn}$ ce note :
+
+$Sys_{syn}|- \{P\}S\{Q\}$  ou plus simplement $|- \{P\}S\{Q\}$ 
+
+
+\subsection{Méthode :}
+
+Tout comme la preuve de correction et de complétude réaliser dans le cours 4-preuve de M.Delahaye nous raisonnerons par récurrence sur la taille de l'arbre de preuve .
+
+Une formule à pour niveau 0 si l'arbre de preuve la précédent est de taille = 0 , typiquement les axiomes .
+Une formule à pour niveau n+1 si elle a été déduite par une règle du système déductif et que l'arbre de preuve de cette règle est de taille n .
+
+
+\subsection{ Correction : }
+
+Dis grossièrement ,pour prouver la completude syntaxique  nous devons vérifier que  "toute expression dérivable à partir d'un axiome est vrai" , à savoir:
+
+$|- \{P\}S\{Q\} \implies |= \{P\}S\{Q\}  $  
+
+
+\subsection{Les Axiomes :}
+La Base ou niveau 0 de la relation de récurrence se prouve en montrant que $|- \{P\}S\{Q\} \implies |= \{P\}S\{Q\}  $ est vrai pour les feuilles de notre arbre de preuve .
+\begin{itemize}
+    \item Skip , nous avons $\forall st , < skip , st > \rightarrow st  $ par la règle E\textunderscore Skip prouvons que alors nous avons $|= \{P\}skip\{P\}$ en d'autre terme:
+    
+        $\forall st , < skip , st > \rightarrow st$ $\implies$ $\forall$ st st' , $< S ,st > \rightarrow st' \implies $  P st = tt    $\implies$ P st' = tt . 
+        
+      Alors supposons également que :
+      $\forall$ st st' , $< S ,st > \rightarrow st' \implies $  P st = tt
+     Et voyons si la formule P st' = tt est vrai , nous la noterons F . 
+     
+     
+        Comme $\forall st , < skip , st > \rightarrow st$ alors st=st' donc $F \leftrightarrow F[st'<-st]$
+        Ainsi F se réecrit P st = tt . Ce qui est vrai par hypothèse : Assumption . 
+     
+    \item Ass , supposons que nous avons  $\forall st , < x:=z , st > \rightarrow st[x \rightarrow (aeval st z)] $ par la règle E\textunderscore Ass prouvons que alors nous avons $|= \{P[x \rightarrow (aeval st z)]\}Ass\{P\}$ en d'autre terme:
+    $\forall$ st  , $< x:=z ,st > \rightarrow st[x \rightarrow (aeval st z)]   \implies $  $(P[x \rightarrow (aeval st z)])$  st = tt    $\implies$ P st[x \rightarrow (aeval st z)] = tt .
+    Supposons $(P[x \rightarrow (aeval st z)])$  st = tt et voyons si nous arrivons à $P st[x \rightarrow (aeval st z)] = tt$ :
+    $(P[x \rightarrow (aeval st z)])$  signifie que l'on subsitue les occurences de x dans P seront remplacé par la valeur sémantique de z dans st 
+    
+    
+    $st[x \rightarrow (aeval st z)]$ signifie que la valeur de x dans state sera la valeur sémantique de z .
+
+     $P st'$ signifie alors que  les occurence de x seront remplacé par sa valeur dans st' 
+    
+    donc si $st' = st[x \rightarrow (aeval st z)]$  les occurences de x dans P seront remplacé par la valeur sémantique de z dans st 
+    
+    Donc :
+    $(P[x \rightarrow (aeval st z)]) st $ $\leftrightarrow$  $P st[x \rightarrow (aeval st z)] $
+    
+    Ainsi comme par hypothèse :  $(P[x \rightarrow (aeval st z)]) st $ = tt alors $P st[x \rightarrow (aeval st z)] $ =tt . Fin .
+    
+    
+\end{itemize}
+
+\subsection{Les Règles d'inférences :}
+\begin{itemize}
+\item Seq , supposons que nous avons $|= \{P\}i1\{Q\}$ \it{et}  $|= \{Q\}i2\{R\}$ prouvons alors que $|= \{P\}i1;i2\{R\}$ 
+Or  $|= \{P\}i1;i2\{R\}$ est : $\forall$ st  , $< i1;i2 ,st > \rightarrow st"$  et P  st = tt $\implies$ R s" = tt . 
+Donc
+Supposons que nous avons : $\forall$ st st", P st =tt et $<i1;i2 , st> \rightarrow  st" $ et voyons si nous avons R st" = tt .
+
+Si nous avons $<i1;i2 , st> \rightarrow  st" $ alors nous avons un état st' tel que $<i1 ,st > \rightarrow st' $ \it{and} $<i2 ,st' > \rightarrow st" $  d'après la règle E\textunderscore Seq.
+
+Par $|= \{P\}i1\{Q\}$ on a " $< i1,st > \rightarrow st' $  et P  st = tt $\implies$ Q s' = tt "  or on a aussi "$<i1,st> \rightarrow st'$ et P st = tt" donc on a Q s' =tt .
+
+Par $|= \{Q\}i2\{R\}$ on a " $<i2,st' > \rightarrow st" $  et Q  st' = tt $\implies$ R s" = tt " or on a aussi "$<i2,st'> \rightarrow st" $ et Q st' = tt" donc on a R s" =tt .
+
+Fin.
+
+\item if , supposons que nous avons $\forall$ st , $|= \{P \land (beval st e) \}i1\{Q\}$ \it{et}  $|= \{P \land \lnot (beval st e) \}i2\{Q\}$ prouvons alors que $|= \{P\}if e then i1 else i2 \{Q\}$ 
+
+Or $|= \{P\}if e then i1 else i2 \{Q\}$  est : $\forall$ st  , $< if e then i1 else i2 ,st > \rightarrow st' $  et P  st = tt $\implies$ Q s' = tt .
+
+Donc 
+Supposons que nous avons : $\forall$ st  , $< if e then i1 else i2 ,st > \rightarrow st' $  et P  st = tt  et voyons si nous avons Q st' = tt .
+
+Si nous avons  $< if e then i1 else i2 ,st > \rightarrow st' $  alors nous avons soit $<i1 ,st > \rightarrow st' $ si $(beval st e) = tt$ \it{soit} $<i2 ,st > \rightarrow st' $  si $(beval st e = ff$ d'après la règle E\textunderscore ifTop et E\textunderscore ifBot .
+
+Si nous sommes dans le premier cas : $(beval st e) = tt$ 
+Par $|= \{P \land (beval st e) \}i1\{Q\}$ on a  " $< i1,st > \rightarrow st' $  et $P \land (beval st e)$ st = tt $\implies$ Q st' = tt " or on a aussi $<i1 ,st > \rightarrow st' $ , $(beval st e) = tt$  et P s =tt par  hypothèse du if donc on a Q st'=tt
+
+
+Si nous sommes dans l'autre cas : $(beval st e) = ff$ 
+Par $|= \{P \land \lnot(beval st e) \}i2\{Q\}$ on a  " $< i2,st > \rightarrow st' $  et $P \land (beval st e)$ st = ff $\implies$ Q st' = tt " or on a aussi $<i2 ,st > \rightarrow st' $ , $(beval st e) = ff$  et P s =tt par  hypothèse du if donc on a Q st'=tt
+
+\item while , supposons que nous avons $\forall$ st , $|= \{I \land (beval st e) \}i\{I\}$ prouvons alors que $|= \{I\} while e do i \{ I \land \lnot (beval st e )  \} $
+
+Or $|= \{I\}while e do i\{ I \land \lnot (beval st e ) \}$ est : $\forall$ st  , $<while e do i,st > \rightarrow st" $  et  I st = tt $\implies$ $I \land \lnot (beval st" e)$  st" = tt . 
+
+Donc 
+Supposons que nous avons $\forall$ st  , $<while e do i ,st > \rightarrow st" $  et   I st = tt 
+
+Si nous avons $<while e do i ,st > \rightarrow st" $ alors nous avons soit " $<i ,st> \rightarrow st' $ et $<while e do i , st'> \rightarrow st" $ si $(beval st e ) $ s = tt  soit $<while e do i ,st > \rightarrow st' $ si $(beval st e ) $ s = ff .
+
+Si nous sommes dans le premier cas : $(beval st e) = tt$ 
+alors on a : $<i ,st> \rightarrow st' $ et $<while e do i , st'> \rightarrow st" $ 
+Par $\forall$ st , $|= \{I \land (beval st e) \}i\{I\}$ on  a " $\forall$ st  , $< i ,st > \rightarrow st' $  et $(I \land (beval st e) )$  st = tt $\implies$ I st' = tt " or on a $<i ,st> \rightarrow st' $ par hypothèse du cas mais aussi I st =tt par hypothèse Donc on a I st' =tt .Ainsi on a $< while e do i ,st'> -> st" $ et I st' = tt 
+Or par induction on si $< while e do i ,st'> -> st" $ et I st' = tt  alors  $I\land \lnot(beval st" e)$  st" =tt  Donc on a $I\land \lnot(beval st" e)$  st" =tt Fin . 
+
+\item cons, supposons que nous avons $\forall$ st , $|= \{P'\}i\{Q'\}$ , $P \implies P'$ et $Q' \implies Q$ prouvons alors que $|= \{P\}i\{ Q\} $
+
+
+Or $|= \{P\}i\{ Q\}$  est : $\forall$ st  , $<i,st > \rightarrow st' $  et P  st = tt $\implies$ Q st' = tt .
+
+Donc 
+Supposons que nous avons : $\forall$ st  , $< i,st > \rightarrow st' $  , P  st = tt  et  voyons si nous avons Q st' = tt .
+
+Comme nous avons P s = tt or par supposition $P \implies P'$  donc P' s =tt  , nous avons aussi supposé que $|= \{P'\}i\{Q'\}$ est : "$\forall$ st  , $<i,st > \rightarrow st' $  et P'  st = tt $\implies$ Q' st' = tt " donc comme on a $<i,st > \rightarrow st' $  et P' s =tt alors on a Q' st' =tt or par supposition $Q' \implies Q$ donc Q st' = tt . 
+
+Fin. 
+
+\subsection{ Complétude : }
+
+\noindent Dis grossièrement ,pour prouver la completude sémantique  nous devons vérifier que  "toute expression vrai est dérivable d'un axiome " , à savoir:
+
+
+$|= \{P\}S\{Q\} \implies |- \{P\}S\{Q\}  $  
+
+
+
+
+
+
+
+Par induction nous avons $|= \{P\}i1\{Q\} \implies |- \{P\}i1\{Q\}$
+
+
+$\forall$ st st', $< i1 , st > \rightarrow st'$et$\foral$ st" $< i2 , st' > \rightarrow st"$
+\end{itemize}
+
+*:( si elle n'est pas close il suffirait d'associer une assignation des variables libre à la structure où de la généraliser : cloture universelle   ) 
+
+
+
+
+
+Coq se base sur le calcul des constructions , chaque ensemble est construit suivant un ensemble de briques atomiques (sa base) et d'expression complexes.
+Ainsi pour vérifier l'appartenance d'une expression à un ensemble il faut procéder comme suit:
+\begin{lstlisting}[style=CStyle]
+// E.b_cst : est la base de E 
+//E.f_cst : sont les fonctions de E 
+Relation_appartenance ( expr:Type) : Bool {
+if( appartient(expr ,E.b_cst)  ) return true ;
+else if (appartient(expr , E.f_cst )) return Relation_appartenance(expr')
+else return false;
+}
+\end{lstlisting}
+
+
+
+
+Pour pouvoir évaluer les expressions nous avons besoins de définir leur sémantique :
+En ce qui concerne les expressions booléenne 
+
+
+\underline{Notation}: pour la suite de ce TP un ensemble d'instructions sera appelé un programme  et le type instructions sera noté Stm (en référence à "statement") .
+
+
+\pagebreak
+\begin{thebibliography}{30}
+%%% please mark the coresponding bibitem id (e.g.: bibitem{wiki1}) %%%
+
+\bibitem{S1-livre}
+{\em Coq Art (V8)  },{ Yves.Bertot, 2015},
+\url{https://www.labri.fr/perso/casteran/CoqArt/}
+
+
+\bibitem{S2-code}
+{\em Software Foundations :Logical Foundation } , {Benjamin C. Pierce},
+\url{https://softwarefoundations.cis.upenn.edu/lf-current/toc.html}
+
+
+\bibitem{S3-livre}
+{\em Certified Programming with Dependent Type }, {Adam Chlipala  },
+\url{http://adam.chlipala.net/cpdt/}
+
+
+\bibitem{S4-book}
+{\em Semantics with applications , A formal introduction (course) }, { Nielson et Nielson, 2019.}, \url{https://www.cs.ru.nl/~herman/onderwijs/semantics2019/}
+
+
+\bibitem{A1-wiki}
+{\em Lambda Calculus }, { wikipedia ,2020  },
+\url{https://en.wikipedia.org/wiki/Lambda_calculus}
+
+
+\bibitem{A2-code}
+{\em Coq Doc },{Pierre Courtieu},
+\url{http://cedric.cnam.fr/~courtiep/downloads/loglangcoq/toc.html}
+
+
+\bibitem{A3-code}
+{\em A Tutorial on Reflecting in Coq the generation of Hoare proof obligations },{Sylvain Boulmé},
+\url{http://www-verimag.imag.fr/~boulme/HOARE_LOGIC_TUTORIAL/index.html}
+
+
+
+\bibitem{A4-book}
+{\em Gentle Introduction to Dependent Type }, {Boro Sitnikovski,2018}, 
+\url{https://www.researchgate.net/publication/341780951_Gentle_Introduction_to_Dependent_Types_with_Idris}
+
+
+
+\bibitem{A5-notes}
+{\em Cours MPRI Coq }, {Christine Paulin}, 
+\url{https://www.lri.fr/~paulin/DEA/introduction.html}
+\\
+\url{https://www.lri.fr/~paulin/MPRI/notes/}
+
+
+
+\bibitem{B1-code}
+{\em Software Foundations :Logical Foundation (solution)  },{Junyoung Clare Jang, Ailrun ( maintainer )},
+\url{https://github.com/Ailrun/software_foundations_solution}
+
+
+\bibitem{B2-cours}
+{\em Introduction à coq }, {Micaela Mayero ,Paris 13 },
+\url{https://lipn.univ-paris13.fr/~mayero/?content=master}
+
+
+\bibitem{B3-agreg}
+{\em Logique Hoare ( AGREG) },{Pierre Le Barbenchon ,Rennes }, 
+\url{http://perso.eleves.ens-rennes.fr/people/pierre.le-barbenchon/agreg.html}
+
+
+
+\bibitem{B4-CM}
+{\em Cours M2 coq }, {Pierre Courtieu}, 
+\url{http://cedric.cnam.fr/~courtiep/}
+
+
+
+\bibitem{B5-TD}
+{\em Outils de preuve et verification }, { Pierre Courtieu, 2008.}, 
+
+
+
+
+\bibitem{C1-code}
+{\em A Tutorial on Reflecting in Coq the generation of Hoare proof obligations (github) },{ Kartik Singhal ( maintainer ) },
+\url{https://github.com/coq-community/hoare-tut}
+
+
+\bibitem{C2-code}
+{\em Software Foundations :Logical Foundation  (solution 2 ) },{Haklabbeograd ( maintainer )},
+\url{https://github.com/haklabbeograd/software-foundations-coq-workshop}
+
+\bibitem{C3-video}
+{\em Video Coq }, {Yves.Bertot, 2017.}, 
+\url{http://www-sop.inria.fr/members/Yves.Bertot/videos-coq/}
+
+
+
+\bibitem{CC1-CM}
+{\em Logique equationnelle et reecriture }, {Sophie Pinchinat (et David Cachera), 2017.}, 
+\url{https://people.irisa.fr/Sophie.Pinchinat/}
+
+
+\bibitem{D1-logiciel}
+{\em Pedagogical prover of ENS Rennes }, {IRISA}, 
+\url{http://pravda.irisa.fr/}
+
+
+\bibitem{CB1-notes}
+{\em Complément Recherche : Logique equationnelle et evaluation symbolique }, {Marc Aiguier}, 
+\url{https://perso.ecp.fr/~aiguierm/publications/support-cours/}
+
+
+\bibitem{FS1-livre}
+{\em Lambda-calculus Types and Models }, {Jean-Louis Krivine ,(trad. René Cori ) },
+\url{https://www.irif.fr/~krivine/articles/}
+
+
+\end{thebibliography}
+\pagebreak
+
+\begin{appendices}
+
+
+
+\begin{lstlisting}[style=CStyle]
+// (* Nous definissons beq_id qui comme sont nom l'indique renvoie un booleen et correpond a la relation eq pour le type id *)
+
+Definition beq_id (X1 : id) (X2 : id) : bool :=
+    match (X1, X2) with
+      (Id x1, Id x2) => beq_nat x1 x2 //(* si X1 et X2 sont le resultat de la fonction Id applique a x1 et x2 resp alors beq_id X1 X2 <-> beq_nat x1x2 *)
+    end.
+\end{lstlisting}
+
+\begin{lstlisting}[style=CStyle]
+Notation "'SKIP'" := ISkip.
+Notation "X '::=' a" :=  (IAss X a) (at level 60). //(* ':=' est deja pris *)
+Notation "i1 ; i2" := (ISeq i1 i2) (at level 80, right associativity).
+Notation "'WHILE' b 'DO' c " := (IWhile b c) (at level 80, right associativity).
+Notation "'IFB' e1 'THEN' e2 'ELSE' e3 " :=(IIf e1 e2 e3) (at level 80, right associativity).//(* 'IF' est deja pris *)
+
+
+Reserved Notation "E '|-' i1 '~~>' E'" (at level 40 ).  //(* le reserved pour le where *)
+
+Inductive ceval : instr_dlh -> state -> state -> Prop :=
+  | E_Skip : forall (E : state),
+      E |- ISkip   ~~> E
+  | E_Ass : forall (E : state) (e : aexp) (v : Z) (x : id),
+       (aeval E e = v) ->  E |- x ::=  e  ~~>  (update E x v)
+  | E_Seq : forall (i1 i2 : instr_dlh) (E E1 E2 : state),
+       ( E |- i1  ~~>E1 ) -> (E1 |- i2  ~~> E2) -> E |- i1 ; i2 ~~>  E2
+  | E_IfTrue : forall (E E': state) (i1 i2 : instr_dlh ) (e : bexp),
+       (beval E e = true) -> (E |- i1 ~~> E') ->  E |- IFB e  THEN i1 ELSE i2 ~~> E'
+  | E_IfFalse : forall (E E': state) (i1 i2 : instr_dlh ) (e : bexp),
+       (beval E e = false) -> (E |- i2  ~~>  E') -> E |- IFB e THEN  i1 ELSE i2  ~~> E'
+  | E_WhileTop : forall (E : state) (i : instr_dlh ) (e : bexp),
+      (beval E e = false ) -> E |- WHILE e  DO i  ~~>  E
+  | E_WhileBot : forall (E E' E'': state) (i : instr_dlh) (e : bexp),
+       beval E e = true -> 
+       (E |- i  ~~> E') ->
+       (E' |- WHILE e  DO i  ~~>  E'') -> 
+       E |- WHILE e DO i  ~~>  E''
+  where "E '|-' i '~~>' E'" := (ceval i E E').
+  
+\end{lstlisting}  
+\end{appendices}
+
+\end{document}
